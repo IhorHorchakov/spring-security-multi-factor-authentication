@@ -1,9 +1,9 @@
 version: '3'
 services:
 
-  spring-security-multi-factor-nexmo-authentication:
-    container_name: spring-security-multi-factor-nexmo-authentication
-    image: spring-security-multi-factor-nexmo-authentication
+  spring-security-multi-factor-authentication:
+    container_name: spring-security-multi-factor-authentication
+    image: spring-security-multi-factor-authentication
     ports:
       - "8080:8080"
       - "9251:9251"
