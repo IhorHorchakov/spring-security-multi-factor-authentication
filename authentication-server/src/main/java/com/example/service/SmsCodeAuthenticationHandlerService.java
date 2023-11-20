@@ -1,14 +1,18 @@
-package com.example.security;
+package com.example.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 
 @Component
-public class SmsCodeAuthenticationHandler implements AuthenticationSuccessHandler {
+public class SmsCodeAuthenticationHandlerService implements AuthenticationSuccessHandler {
+
+    @Autowired
+    private VerificationTokenService verificationTokenService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
