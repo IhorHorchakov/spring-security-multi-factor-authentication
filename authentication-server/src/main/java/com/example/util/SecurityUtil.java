@@ -5,8 +5,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @UtilityClass
 public class SecurityUtil {
-    private final static Integer PASSWORD_STRENGTH = 20;
-    private final static BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder(PASSWORD_STRENGTH);
+    private final static BCryptPasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
     public static BCryptPasswordEncoder getPasswordEncoder() {
         return PASSWORD_ENCODER;

@@ -37,13 +37,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .formLogin()
-//                    .loginPage("/login").permitAll()
-//                    .usernameParameter("usrnm")
-//                    .passwordParameter("pass")
-                    .successHandler(smsCodeAuthenticationHandler)
+                .authorizeHttpRequests().requestMatchers("/login*").permitAll()
                 .and()
-                    .logout().permitAll();
+                .formLogin()
+                    .loginPage("/login")
+                    .loginProcessingUrl("/login")
+                    .successHandler(smsCodeAuthenticationHandler);
         return http.build();
     }
 }
