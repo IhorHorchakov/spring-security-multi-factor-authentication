@@ -30,7 +30,12 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
-    public Optional<User> getByUsername(String username) {
-        return storage.values().stream().filter(user -> user.getUsername().equals(username)).findFirst();
+    public Optional<User> getById(int id) {
+        return Optional.ofNullable(this.storage.get(id));
+    }
+
+    @Override
+    public Optional<User> getByUserName(String username) {
+        return this.storage.values().stream().filter(user -> user.getUsername().equals(username)).findFirst();
     }
 }

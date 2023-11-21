@@ -6,5 +6,8 @@ import java.util.Optional;
 
 public interface UserRepository {
 
-    Optional<User> getByUsername(String username);
+    Optional<User> getById(int id);
+
+    Optional<User> getByUserName(String username);
+
 }

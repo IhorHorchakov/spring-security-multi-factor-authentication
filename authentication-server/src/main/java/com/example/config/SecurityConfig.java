@@ -1,6 +1,6 @@
 package com.example.config;
 
-import com.example.service.SmsCodeAuthenticationHandlerService;
+import com.example.service.SmsCodeAuthenticationHandler;
 import com.example.service.UserService;
 import com.example.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -18,7 +19,7 @@ public class SecurityConfig {
     @Autowired
     private UserService userService;
     @Autowired
-    private SmsCodeAuthenticationHandlerService smsCodeAuthenticationHandlerService;
+    private SmsCodeAuthenticationHandler smsCodeAuthenticationHandler;
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return SecurityUtil.getPasswordEncoder();
@@ -35,11 +36,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .formLogin()
-                    .loginPage("/login").permitAll()
-                    .usernameParameter("username")
-                    .passwordParameter("password")
-                    .successHandler(smsCodeAuthenticationHandlerService)
+//                    .loginPage("/login").permitAll()
+//                    .usernameParameter("usrnm")
+//                    .passwordParameter("pass")
+                    .successHandler(smsCodeAuthenticationHandler)
                 .and()
                     .logout().permitAll();
         return http.build();
