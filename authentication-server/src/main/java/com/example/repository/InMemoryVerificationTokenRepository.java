@@ -1,6 +1,7 @@
 package com.example.repository;
 
 import com.example.repository.entity.SmsCodeVerificationToken;
+import com.example.repository.entity.VerificationTokenStatus;
 import org.springframework.stereotype.Repository;
 
 import java.util.LinkedHashMap;
@@ -21,7 +22,13 @@ public class InMemoryVerificationTokenRepository implements VerificationTokenRep
 
     @Override
     public Optional<SmsCodeVerificationToken> getLatestPendingTokenByUserId(int userId) {
+
         return Optional.empty();
+    }
+
+    @Override
+    public void updateStatusByTokenId(String tokenId, VerificationTokenStatus status) {
+
     }
 
 }

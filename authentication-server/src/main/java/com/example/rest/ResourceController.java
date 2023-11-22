@@ -22,11 +22,6 @@ public class ResourceController {
         return new ModelAndView("login-page.html", HttpStatus.OK);
     }
 
-    @PostMapping("/login")
-    public void processLogin() {
-        log.info("Processing login to verify user credentials");
-    }
-
     @GetMapping("/verify-sms-code")
     public ModelAndView verifySmsCodePage(Principal principal) {
         log.info("Redirecting a user to the 'Verify sms code' page");

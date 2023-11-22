@@ -37,7 +37,7 @@ public class VerificationTokenService {
     }
 
     private SmsCodeVerificationToken createToken(User user) {
-        VerifyResponse verifyResponse = verificationTokenClient.nexmoVerifyPhoneNumber(user.getPhoneNumber(), APPLICATION_BRAND);
+        VerifyResponse verifyResponse = verificationTokenClient.nexmoSendSmsCode(user.getPhoneNumber(), APPLICATION_BRAND);
         if (verifyResponse.getErrorText() != null) {
             String errorMessage = "An error occurred while verifying user's phone number, cause: %s, status: %s".formatted(verifyResponse.getErrorText(), verifyResponse.getStatus());
             throw new RuntimeException(errorMessage);
@@ -53,6 +53,21 @@ public class VerificationTokenService {
     }
 
     public void verifySmsCode(String username, String smsCode) {
+        User user = userService.getByUserName(username);
+        Optional<SmsCodeVerificationToken> optionalToken = verificationTokenRepository.getLatestPendingTokenByUserId(user.getId());
+        if (optionalToken.isEmpty()) {
+            String message = "Failed to obtain the token for user '%s', start the authentication again".formatted(username);
+            throw new RuntimeException(message);
+        } else {
+            SmsCodeVerificationToken token = optionalToken.get();
+            String tokenId = token.getTokenId();
+            boolean isSmsCodeValid = verificationTokenClient.nexmoCheckCode(tokenId, smsCode);
+            if (isSmsCodeValid) {
+                verificationTokenRepository.updateStatusByTokenId(tokenId, VerificationTokenStatus.VERIFICATION_PASSED);
+            } else {
+                verificationTokenRepository.updateStatusByTokenId(tokenId, VerificationTokenStatus.VERIFICATION_FAILED);
+            }
+        }
 
     }
 }

@@ -1,10 +1,6 @@
 package com.example.client;
 
-import com.nexmo.client.NexmoClient;
-import com.nexmo.client.verify.VerifyClient;
 import com.nexmo.client.verify.VerifyResponse;
-import com.nexmo.client.verify.VerifyStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,11 +10,15 @@ public class VerificationTokenClient {
 //    @Autowired
 //    private NexmoClient nexmoClient;
 
-    public VerifyResponse nexmoVerifyPhoneNumber(String phoneNumber, String applicationBrand) {
+    public VerifyResponse nexmoSendSmsCode(String phoneNumber, String applicationBrand) {
         String jsonResponse = "{\n" +
-                "  \"request_id\": \"123456\",\n" +
+                "  \"request_id\": \"1234\",\n" +
                 "  \"status\": \"OK\"\n" +
                 "}";
         return VerifyResponse.fromJson(jsonResponse);
+    }
+
+    public boolean nexmoCheckCode(String tokenId, String smsCode) {
+        return Integer.getInteger(smsCode) == 1234;
     }
 }

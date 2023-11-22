@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests()
                     .requestMatchers("/login").permitAll()
-                    .requestMatchers("/verify-sms-code").authenticated()
+                    .requestMatchers("/verify-sms-code").permitAll()
                 .and()
                 .formLogin()
                     .loginPage("/login")
