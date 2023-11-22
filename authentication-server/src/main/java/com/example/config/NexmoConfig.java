@@ -10,9 +10,9 @@ import static com.example.util.ApplicationConstants.APPLICATION_ID;
 
 @Configuration
 public class NexmoConfig {
-    @Value("nexmo.api.key")
+    @Value("${nexmo.api.key}")
     private String apiKey;
-    @Value("nexmo.secret.key")
+    @Value("${nexmo.secret.key}")
     private String secretKey;
 
 //    @Bean

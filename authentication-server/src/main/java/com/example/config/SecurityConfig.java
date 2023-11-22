@@ -36,12 +36,9 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                    .requestMatchers("/login*").permitAll()
                     .requestMatchers("/verify-sms-code").authenticated()
                 .and()
                 .formLogin()
-                    .loginPage("/login")
-                    .loginProcessingUrl("/login")
                     .successHandler(smsCodeAuthenticationHandler);
         return http.build();
     }
