@@ -16,10 +16,21 @@ public class ResourceController {
     @Autowired
     private VerificationTokenService verificationTokenService;
 
+    @GetMapping("/login")
+    public ModelAndView loginPage() {
+        log.info("Redirecting a user to the 'Login' page");
+        return new ModelAndView("login-page.html", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public void processLogin() {
+        log.info("Processing login to verify user credentials");
+    }
+
     @GetMapping("/verify-sms-code")
-    public String verifySmsCodePage(Principal principal) {
+    public ModelAndView verifySmsCodePage(Principal principal) {
         log.info("Redirecting a user to the 'Verify sms code' page");
-        return "verify-sms-code-page";
+        return new ModelAndView("verify-sms-code-page.html", HttpStatus.OK);
     }
 
     @PostMapping("/verify-sms-code")
