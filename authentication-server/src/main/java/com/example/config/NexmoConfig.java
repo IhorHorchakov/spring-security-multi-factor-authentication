@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static com.example.util.ApplicationConstants.APPLICATION_ID;
+
 @Configuration
 public class NexmoConfig {
     @Value("nexmo.api.key")
@@ -13,17 +15,17 @@ public class NexmoConfig {
     @Value("nexmo.secret.key")
     private String secretKey;
 
-//    @Bean
-//    public NexmoClient nexmoClient() {
-//        return NexmoClient.builder()
-//                .applicationId("spring-security-multi-factor-authentication")
-//                .apiKey(apiKey)
-//                .apiSecret(secretKey)
-//                .build();
-//    }
+    @Bean
+    public NexmoClient nexmoClient() {
+        return NexmoClient.builder()
+                .applicationId(APPLICATION_ID)
+                .apiKey(apiKey)
+                .apiSecret(secretKey)
+                .build();
+    }
 
-//    @Bean
-//    public VerifyClient nexmoVerifyClient(NexmoClient nexmoClient) {
-//        return nexmoClient.getVerifyClient();
-//    }
+    @Bean
+    public VerifyClient nexmoVerifyClient(NexmoClient nexmoClient) {
+        return nexmoClient.getVerifyClient();
+    }
 }

@@ -11,14 +11,7 @@ import java.util.UUID;
 
 @Repository
 public class InMemoryVerificationTokenRepository implements VerificationTokenRepository {
-
     private final Map<String, SmsCodeVerificationToken> storage = new LinkedHashMap<>();
-
-
-    @Override
-    public Optional<SmsCodeVerificationToken> getLatestPendingTokenByUserId(int userId) {
-        return Optional.empty();
-    }
 
     @Override
     public void save(SmsCodeVerificationToken token) {
@@ -27,4 +20,10 @@ public class InMemoryVerificationTokenRepository implements VerificationTokenRep
         }
         this.storage.put(token.getTokenId(), token);
     }
+
+    @Override
+    public Optional<SmsCodeVerificationToken> getLatestPendingTokenByUserId(int userId) {
+        return Optional.empty();
+    }
+
 }
