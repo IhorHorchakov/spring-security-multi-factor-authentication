@@ -1,7 +1,9 @@
 package com.example.repository;
 
 import com.example.repository.entity.User;
-import com.example.util.SecurityUtil;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -11,18 +13,21 @@ import java.util.Optional;
 @Repository
 public class InMemoryUserRepository implements UserRepository {
     private final Map<Integer, User> storage = new HashMap<>();
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
-    public InMemoryUserRepository() {
+    @PostConstruct
+    public void populateUsersOnApplicationStartUp() {
         User johndoe = User.builder()
                 .id(0)
                 .username("johndoe")
-                .password(SecurityUtil.encodePassword("johndoepass"))
+                .password(passwordEncoder.encode("johndoepass"))
                 .phoneNumber("+380951234567")
                 .build();
         User fairyprincess = User.builder()
                 .id(1)
                 .username("fairyprincess")
-                .password(SecurityUtil.encodePassword("fairyprincesspass"))
+                .password(passwordEncoder.encode("fairyprincesspass"))
                 .phoneNumber("+380951234560")
                 .build();
         this.storage.put(johndoe.getId(), johndoe);
