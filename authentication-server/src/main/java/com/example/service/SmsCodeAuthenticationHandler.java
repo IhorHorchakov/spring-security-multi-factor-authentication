@@ -1,6 +1,5 @@
 package com.example.service;
 
-import com.example.repository.entity.SmsCodeVerificationToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +11,6 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.security.Principal;
 
 
 @Component
@@ -27,8 +25,9 @@ public class SmsCodeAuthenticationHandler implements AuthenticationSuccessHandle
         try {
             String username = ((User) authentication.getPrincipal()).getUsername();
             log.info("User %s has passed form login. Let's verify the identity by SMS code".formatted(username));
-            SmsCodeVerificationToken token = verificationTokenService.getSmsCodeVerificationToken(username);
 
+            verificationTokenService.createSmsCodeVerificationToken(username);
+            // TODO add the new role to allow user to be redirected to verification page
             new DefaultRedirectStrategy().sendRedirect(request, response, VERIFICATION_URL);
         } catch (IOException e) {
             throw new RuntimeException(e);

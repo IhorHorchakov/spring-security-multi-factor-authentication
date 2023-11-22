@@ -23,7 +23,7 @@ public class InMemoryVerificationTokenRepository implements VerificationTokenRep
     @Override
     public void save(SmsCodeVerificationToken token) {
         if (token.getTokenId() == null) {
-            throw new IllegalArgumentException("Failed to same token, the tokenId is null");
+            throw new IllegalArgumentException("Failed to save token, the tokenId is null");
         }
         this.storage.put(token.getTokenId(), token);
     }

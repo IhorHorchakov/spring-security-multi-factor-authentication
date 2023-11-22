@@ -1,1 +1,19 @@
-verify sms code page
+<html>
+<head></head>
+<body>
+<body>
+<div class="container">
+    <div class="col-lg-4 offset-lg-4 text-left">
+        <form action="/verify-sms-code" method="post">
+            <h1>Verification page</h1>
+            <p>A text message has been sent to your mobile device. Please enter the code below:</p>
+            <div class="form-group">
+                <label for="smsCode">Verification Code</label>
+                <input id="smsCode" smsCode="code" type="text" placeholder="4-Digit Code" />
+            </div>
+            <button type="submit">Verify</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

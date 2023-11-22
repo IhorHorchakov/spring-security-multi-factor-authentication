@@ -19,15 +19,12 @@ public class VerificationTokenService {
     @Autowired
     private UserService userService;
 
-    public SmsCodeVerificationToken getSmsCodeVerificationToken(String username) {
+    public void createSmsCodeVerificationToken(String username) {
         User user = userService.getByUserName(username);
         Optional<SmsCodeVerificationToken> optionalToken = verificationTokenRepository.getLatestPendingTokenByUserId(user.getId());
-        if (optionalToken.isPresent()) {
-            return optionalToken.get();
-        } else {
+        if (optionalToken.isEmpty()) {
             SmsCodeVerificationToken token = createToken(user);
             verificationTokenRepository.save(token);
-            return token;
         }
     }
 
@@ -41,4 +38,7 @@ public class VerificationTokenService {
         return token;
     }
 
+    public void verifySmsCode(String username, String smsCode) {
+
+    }
 }
