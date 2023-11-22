@@ -3,11 +3,9 @@ package com.example.repository;
 import com.example.repository.entity.SmsCodeVerificationToken;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
 public class InMemoryVerificationTokenRepository implements VerificationTokenRepository {

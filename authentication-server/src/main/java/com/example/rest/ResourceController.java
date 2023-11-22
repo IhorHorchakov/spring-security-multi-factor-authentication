@@ -3,8 +3,10 @@ package com.example.rest;
 import com.example.service.VerificationTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
 
@@ -15,9 +17,9 @@ public class ResourceController {
     private VerificationTokenService verificationTokenService;
 
     @GetMapping("/login")
-    public String loginPage() {
+    public ModelAndView loginPage() {
         log.info("Redirecting a user to the 'Login' page");
-        return "login-page";
+        return new ModelAndView("login-page.html", HttpStatus.OK);
     }
 
     @PostMapping("/login")

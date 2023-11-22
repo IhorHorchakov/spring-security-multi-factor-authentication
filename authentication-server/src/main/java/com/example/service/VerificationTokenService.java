@@ -1,11 +1,10 @@
 package com.example.service;
 
+import com.example.client.VerificationTokenClient;
 import com.example.repository.VerificationTokenRepository;
 import com.example.repository.entity.SmsCodeVerificationToken;
 import com.example.repository.entity.User;
 import com.example.repository.entity.VerificationTokenStatus;
-import com.example.util.ApplicationConstants;
-import com.nexmo.client.verify.VerifyClient;
 import com.nexmo.client.verify.VerifyResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,7 @@ public class VerificationTokenService {
     @Autowired
     private UserService userService;
     @Autowired
-    private VerifyClient nexmoVerifyClient;
+    private VerificationTokenClient verificationTokenClient;
 
     public void createSmsCodeVerificationToken(String username) {
         User user = userService.getByUserName(username);
@@ -38,7 +37,7 @@ public class VerificationTokenService {
     }
 
     private SmsCodeVerificationToken createToken(User user) {
-        VerifyResponse verifyResponse = nexmoVerifyClient.verify(user.getPhoneNumber(), APPLICATION_BRAND);
+        VerifyResponse verifyResponse = verificationTokenClient.nexmoVerifyPhoneNumber(user.getPhoneNumber(), APPLICATION_BRAND);
         if (verifyResponse.getErrorText() != null) {
             String errorMessage = "An error occurred while verifying user's phone number, cause: %s, status: %s".formatted(verifyResponse.getErrorText(), verifyResponse.getStatus());
             throw new RuntimeException(errorMessage);

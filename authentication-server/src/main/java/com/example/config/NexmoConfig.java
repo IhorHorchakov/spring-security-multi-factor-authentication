@@ -15,17 +15,17 @@ public class NexmoConfig {
     @Value("nexmo.secret.key")
     private String secretKey;
 
-    @Bean
-    public NexmoClient nexmoClient() {
-        return NexmoClient.builder()
-                .applicationId(APPLICATION_ID)
-                .apiKey(apiKey)
-                .apiSecret(secretKey)
-                .build();
-    }
-
-    @Bean
-    public VerifyClient nexmoVerifyClient(NexmoClient nexmoClient) {
-        return nexmoClient.getVerifyClient();
-    }
+//    @Bean
+//    public NexmoClient nexmoClient() {
+//        return NexmoClient.builder()
+//                .applicationId(APPLICATION_ID)
+//                .apiKey(apiKey)
+//                .apiSecret(secretKey)
+//                .build();
+//    }
+//
+//    @Bean
+//    public VerifyClient nexmoVerifyClient(NexmoClient nexmoClient) {
+//        return nexmoClient.getVerifyClient();
+//    }
 }

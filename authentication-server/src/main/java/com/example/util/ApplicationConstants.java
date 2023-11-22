@@ -3,13 +3,12 @@ package com.example.util;
 import lombok.experimental.UtilityClass;
 
 /**
- * Util class to store final application constants and properties.
- * Using @UtilityClass makes all the properties final static;
+ * Util class to store final application constants and properties
  */
-@UtilityClass
-public class ApplicationConstants {
-    public String APPLICATION_ID = "SPRING_SECURITY_MFA_ID";
-    public String APPLICATION_BRAND = "SPRING_SECURITY_MFA_BRAND";
-    public Integer SMS_CODE_TOKEN_TIME_LIFE_SECONDS = 30;
+public final class ApplicationConstants {
+    public static final String APPLICATION_ID = "SPRING_SECURITY_MFA_ID";
+    public static final String APPLICATION_BRAND = "SPRING_SECURITY_MFA_BRAND";
+    public static final Integer SMS_CODE_TOKEN_TIME_LIFE_SECONDS = 30;
 
+    private ApplicationConstants() {}
 }
