@@ -26,7 +26,7 @@ public class SmsCodeAuthenticationHandler implements AuthenticationSuccessHandle
             String username = ((User) authentication.getPrincipal()).getUsername();
             log.info("User %s has passed form login. Let's verify the identity by SMS code".formatted(username));
 
-            verificationTokenService.createSmsCodeVerificationToken(username);
+            verificationTokenService.publishSmsCodeVerificationToken(username);
             // TODO add the new role to allow user to be redirected to verification page
             new DefaultRedirectStrategy().sendRedirect(request, response, VERIFICATION_URL);
         } catch (IOException e) {

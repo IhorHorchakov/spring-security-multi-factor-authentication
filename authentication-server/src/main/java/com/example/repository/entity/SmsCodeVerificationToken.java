@@ -10,6 +10,7 @@ public class SmsCodeVerificationToken {
     private String tokenId;
     private int userId;
     private String phoneNumber;
+    private LocalDateTime createdDate;
     private LocalDateTime expirationDate;
     private VerificationTokenStatus status;
 }

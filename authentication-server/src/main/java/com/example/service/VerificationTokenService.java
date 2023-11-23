@@ -5,7 +5,6 @@ import com.example.repository.VerificationTokenRepository;
 import com.example.repository.entity.SmsCodeVerificationToken;
 import com.example.repository.entity.User;
 import com.example.repository.entity.VerificationTokenStatus;
-import com.nexmo.client.verify.VerifyResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.example.repository.entity.VerificationTokenStatus.VERIFICATION_FAILED;
+import static com.example.repository.entity.VerificationTokenStatus.VERIFICATION_PASSED;
 import static com.example.util.ApplicationConstants.APPLICATION_BRAND;
 import static com.example.util.ApplicationConstants.SMS_CODE_TOKEN_TIME_LIFE_SECONDS;
 
@@ -27,47 +28,43 @@ public class VerificationTokenService {
     @Autowired
     private VerificationTokenClient verificationTokenClient;
 
-    public void createSmsCodeVerificationToken(String username) {
+    public void publishSmsCodeVerificationToken(String username) {
         User user = userService.getByUserName(username);
         Optional<SmsCodeVerificationToken> optionalToken = verificationTokenRepository.getLatestPendingTokenByUserId(user.getId());
         if (optionalToken.isEmpty()) {
+            verificationTokenClient.nexmoSendSmsCode(user.getPhoneNumber(), APPLICATION_BRAND);
             SmsCodeVerificationToken token = createToken(user);
             verificationTokenRepository.save(token);
         }
     }
 
     private SmsCodeVerificationToken createToken(User user) {
-        VerifyResponse verifyResponse = verificationTokenClient.nexmoSendSmsCode(user.getPhoneNumber(), APPLICATION_BRAND);
-        if (verifyResponse.getErrorText() != null) {
-            String errorMessage = "An error occurred while verifying user's phone number, cause: %s, status: %s".formatted(verifyResponse.getErrorText(), verifyResponse.getStatus());
-            throw new RuntimeException(errorMessage);
-        } else {
-            SmsCodeVerificationToken token = new SmsCodeVerificationToken();
-            token.setTokenId(UUID.randomUUID().toString());
-            token.setUserId(user.getId());
-            token.setPhoneNumber(user.getPhoneNumber());
-            token.setStatus(VerificationTokenStatus.PENDING);
-            token.setExpirationDate(LocalDateTime.now().plusSeconds(SMS_CODE_TOKEN_TIME_LIFE_SECONDS));
-            return token;
-        }
+        SmsCodeVerificationToken token = new SmsCodeVerificationToken();
+        token.setTokenId(UUID.randomUUID().toString());
+        token.setUserId(user.getId());
+        token.setPhoneNumber(user.getPhoneNumber());
+        token.setStatus(VerificationTokenStatus.PENDING);
+        LocalDateTime createdDate = LocalDateTime.now();
+        token.setCreatedDate(createdDate);
+        token.setExpirationDate(createdDate.plusSeconds(SMS_CODE_TOKEN_TIME_LIFE_SECONDS));
+        return token;
     }
 
-    public void verifySmsCode(String username, String smsCode) {
+    public boolean verifySmsCode(String username, String smsCode) {
         User user = userService.getByUserName(username);
         Optional<SmsCodeVerificationToken> optionalToken = verificationTokenRepository.getLatestPendingTokenByUserId(user.getId());
         if (optionalToken.isEmpty()) {
-            String message = "Failed to obtain the token for user '%s', start the authentication again".formatted(username);
-            throw new RuntimeException(message);
+            return false;
         } else {
             SmsCodeVerificationToken token = optionalToken.get();
             String tokenId = token.getTokenId();
             boolean isSmsCodeValid = verificationTokenClient.nexmoCheckCode(tokenId, smsCode);
             if (isSmsCodeValid) {
-                verificationTokenRepository.updateStatusByTokenId(tokenId, VerificationTokenStatus.VERIFICATION_PASSED);
+                verificationTokenRepository.updateStatusByTokenId(tokenId, VERIFICATION_PASSED);
             } else {
-                verificationTokenRepository.updateStatusByTokenId(tokenId, VerificationTokenStatus.VERIFICATION_FAILED);
+                verificationTokenRepository.updateStatusByTokenId(tokenId, VERIFICATION_FAILED);
             }
+            return isSmsCodeValid;
         }
-
     }
 }
