@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.security.Principal;
 
@@ -29,16 +30,23 @@ public class ResourceController {
     }
 
     @PostMapping("/verify-sms-code")
-    public void processSmsCodeVerification(@RequestParam("smsCode") String smsCode, Principal principal) {
+    public RedirectView processSmsCodeVerification(@RequestParam("smsCode") String smsCode, Principal principal) {
         String username = principal.getName();
         log.info("Verifying user {} identity by the input SMS code {}", username, smsCode);
-        verificationTokenService.verifySmsCode(username, smsCode);
+        boolean isValidSmsCode = verificationTokenService.verifySmsCode(username, smsCode);
+        if (isValidSmsCode) {
+            log.info("The given SMS code '{}' is VALID for user '{}'", smsCode, username);
+            return new RedirectView("/home");
+        } else {
+            log.info("The given SMS code '{}' is NOT VALID for user '{}'", smsCode, username);
+            return new RedirectView("/login");
+        }
     }
 
     @GetMapping("/home")
-    public String home(Principal principal) {
+    public ModelAndView home(Principal principal) {
         log.info(principal.getName() + " have been authorized");
-        return "home-page";
+        return new ModelAndView("home-page.html", HttpStatus.OK);
     }
 
 

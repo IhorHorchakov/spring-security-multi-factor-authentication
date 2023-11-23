@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                     .requestMatchers("/login").permitAll()
                     .requestMatchers("/verify-sms-code").permitAll()
+                    .requestMatchers("/home").authenticated()
                 .and()
                 .formLogin()
                     .loginPage("/login")
