@@ -3,7 +3,6 @@ package com.example.repository.entity;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 public class SmsCodeVerificationToken {
@@ -12,5 +11,6 @@ public class SmsCodeVerificationToken {
     private String phoneNumber;
     private LocalDateTime createdDate;
     private LocalDateTime expirationDate;
+    private int attempt;
     private VerificationTokenStatus status;
 }

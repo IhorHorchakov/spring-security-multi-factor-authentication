@@ -7,12 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.example.repository.entity.VerificationTokenStatus.PENDING;
 
@@ -29,9 +25,13 @@ public class InMemoryVerificationTokenRepository implements VerificationTokenRep
     }
 
     @Override
-    public Optional<SmsCodeVerificationToken> getLatestPendingTokenByUserId(int userId) {
+    public Optional<SmsCodeVerificationToken> getPendingActualLatestTokenByUserId(int userId) {
         return this.storage.values().stream()
+                // check the token is 'pending'
                 .filter(token -> token.getUserId() == userId && token.getStatus() == PENDING)
+                // check the token is not expired - 'actual'
+                .filter(token -> token.getExpirationDate().isAfter(LocalDateTime.now()))
+                // get the 'latest' token sorted by created date
                 .min(Comparator.comparing(SmsCodeVerificationToken::getCreatedDate));
     }
 
@@ -40,6 +40,14 @@ public class InMemoryVerificationTokenRepository implements VerificationTokenRep
         SmsCodeVerificationToken token = this.storage.get(tokenId);
         if (token != null) {
             token.setStatus(status);
+        }
+    }
+
+    @Override
+    public void updateAttemptByTokenId(String tokenId, int attempt) {
+        SmsCodeVerificationToken token = this.storage.get(tokenId);
+        if (token != null) {
+            token.setAttempt(attempt);
         }
     }
 

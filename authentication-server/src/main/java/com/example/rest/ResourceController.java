@@ -1,21 +1,21 @@
 package com.example.rest;
 
 import com.example.repository.entity.Authority;
-import com.example.service.UserService;
+import com.example.service.AuthenticationService;
 import com.example.service.VerificationTokenService;
+import com.example.service.VerificationTokenService.TokenVerificationStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.security.Principal;
 
+import static java.util.Collections.singletonMap;
 import static org.springframework.http.HttpStatus.OK;
 
 @Controller
@@ -24,7 +24,7 @@ public class ResourceController {
     @Autowired
     private VerificationTokenService verificationTokenService;
     @Autowired
-    private UserService userService;
+    private AuthenticationService authenticationService;
 
     @GetMapping("/login")
     public ModelAndView loginPage() {
@@ -33,25 +33,31 @@ public class ResourceController {
     }
 
     @GetMapping("/verify-sms-code")
-    @PreAuthorize("hasRole('READY_FOR_SMS_CODE_VERIFICATION')")
     public ModelAndView verifySmsCodePage(Principal principal) {
         log.info("Redirecting a user to the 'Verify sms code' page");
         return new ModelAndView("verify-sms-code-page.html", OK);
     }
 
     @PostMapping("/verify-sms-code")
-    public RedirectView processSmsCodeVerification(@RequestParam("smsCode") String smsCode, Authentication authentication) {
+    public ModelAndView processSmsCodeVerification(@RequestParam("smsCode") String smsCode, Authentication authentication) {
         String username = authentication.getName();
         log.info("Verifying user {} identity by the input SMS code {}", username, smsCode);
-        boolean isValidSmsCode = verificationTokenService.verifySmsCode(username, smsCode);
-        if (isValidSmsCode) {
+        TokenVerificationStatus status = verificationTokenService.verifySmsCode(username, smsCode);
+        if (status.isValid()) {
             log.info("The given SMS code '{}' is VALID for user '{}'", smsCode, username);
-            userService.grandPrincipalByAuthority(Authority.MFA_AUTHENTICATED);
-            return new RedirectView("/home");
-        } else {
+            authenticationService.grandPrincipalByAuthority(Authority.MFA_AUTHENTICATED);
+            return new ModelAndView("redirect:/home");
+        } else if (status.isNotCorrect()){
+            log.info("The given SMS code '{}' is NOT CORRECT for user '{}', try one more time", smsCode, username);
+            String message = "The code is not correct, try one more time";
+            return new ModelAndView("/verify-sms-code", singletonMap("message", message));
+        } else if (status.isMissing()) {
+            log.info("No pending token found, user '{}' has to pass login procedure again", username);
+        } else if (status.isNotValid()) {
             log.info("The given SMS code '{}' is NOT VALID for user '{}'", smsCode, username);
-            return new RedirectView("/verify-sms-code");
         }
+        authenticationService.logOutPrincipal();
+        return new ModelAndView("/login");
     }
 
     @GetMapping("/home")

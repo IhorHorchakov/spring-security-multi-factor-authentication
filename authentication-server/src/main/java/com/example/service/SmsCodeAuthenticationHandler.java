@@ -21,7 +21,7 @@ public class SmsCodeAuthenticationHandler implements AuthenticationSuccessHandle
     @Autowired
     private VerificationTokenService verificationTokenService;
     @Autowired
-    private UserService userService;
+    private AuthenticationService authenticationService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -29,7 +29,7 @@ public class SmsCodeAuthenticationHandler implements AuthenticationSuccessHandle
             String username = authentication.getName();
             log.info("User %s has passed form login. Let's verify the identity by SMS code".formatted(username));
             verificationTokenService.publishSmsCodeVerificationToken(username);
-            userService.grandPrincipalByAuthority(READY_FOR_SMS_CODE_VERIFICATION);
+            authenticationService.grandPrincipalByAuthority(READY_FOR_SMS_CODE_VERIFICATION);
             new DefaultRedirectStrategy().sendRedirect(request, response, VERIFICATION_URL);
         } catch (IOException e) {
             throw new RuntimeException(e);
