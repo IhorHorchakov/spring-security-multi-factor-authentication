@@ -12,12 +12,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static com.example.repository.entity.Authority.MFA_AUTHENTICATED;
+import static com.example.repository.entity.Authority.READY_FOR_SMS_CODE_VERIFICATION;
+
 @Configuration
 public class SecurityConfig {
     @Autowired
     private UserService userService;
     @Autowired
     private SmsCodeAuthenticationHandler smsCodeAuthenticationHandler;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -36,12 +40,12 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                    .requestMatchers("/login").permitAll()
-                    .requestMatchers("/verify-sms-code").permitAll()
-                    .requestMatchers("/home").authenticated()
+                    .requestMatchers("/verify-sms-code").hasAuthority(READY_FOR_SMS_CODE_VERIFICATION.getAuthority())
+                    .requestMatchers("/home").hasAuthority(MFA_AUTHENTICATED.getAuthority())
+                    .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                    .loginPage("/login")
+                    .loginPage("/login").permitAll()
                     .successHandler(smsCodeAuthenticationHandler);
         return http.build();
     }

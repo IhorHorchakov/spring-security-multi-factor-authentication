@@ -5,12 +5,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+
+import static com.example.repository.entity.Authority.READY_FOR_SMS_CODE_VERIFICATION;
 
 
 @Component
@@ -19,18 +20,20 @@ public class SmsCodeAuthenticationHandler implements AuthenticationSuccessHandle
     private static final String VERIFICATION_URL = "/verify-sms-code";
     @Autowired
     private VerificationTokenService verificationTokenService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         try {
-            String username = ((User) authentication.getPrincipal()).getUsername();
+            String username = authentication.getName();
             log.info("User %s has passed form login. Let's verify the identity by SMS code".formatted(username));
-
             verificationTokenService.publishSmsCodeVerificationToken(username);
-            // TODO add the new role to allow user to be redirected to verification page
+            userService.grandPrincipalByAuthority(READY_FOR_SMS_CODE_VERIFICATION);
             new DefaultRedirectStrategy().sendRedirect(request, response, VERIFICATION_URL);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 }
+

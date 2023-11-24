@@ -8,9 +8,11 @@ import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 @Component
 @Slf4j
-public class ApplicationEventListener {
+public class UserDataInitializer {
     @Autowired
     private UserService userService;
     @Autowired
@@ -24,12 +26,14 @@ public class ApplicationEventListener {
                 .username("johndoe")
                 .password(passwordEncoder.encode("johndoepass"))
                 .phoneNumber("+380951234567")
+                .authorities(Arrays.asList())
                 .build();
         User fairyprincess = User.builder()
                 .id(1)
                 .username("fairyprincess")
                 .password(passwordEncoder.encode("fairyprincesspass"))
                 .phoneNumber("+380951234560")
+                .authorities(Arrays.asList())
                 .build();
         userService.save(johndoe);
         userService.save(fairyprincess);
