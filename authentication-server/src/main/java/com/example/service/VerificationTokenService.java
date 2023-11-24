@@ -50,6 +50,7 @@ public class VerificationTokenService {
         return token;
     }
 
+    //TODO handle the case when user have several attempts to enter the sms code
     public boolean verifySmsCode(String username, String smsCode) {
         User user = userService.getByUserName(username);
         Optional<SmsCodeVerificationToken> optionalToken = verificationTokenRepository.getLatestPendingTokenByUserId(user.getId());
