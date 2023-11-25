@@ -1,9 +1,9 @@
 package com.example.rest;
 
 import com.example.repository.entity.Authority;
-import com.example.service.AuthenticationService;
-import com.example.service.VerificationTokenService;
-import com.example.service.VerificationTokenService.TokenVerificationStatus;
+import com.example.service.authentication.AuthenticationService;
+import com.example.service.verification.TokenVerificationStatus;
+import com.example.service.verification.VerificationTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

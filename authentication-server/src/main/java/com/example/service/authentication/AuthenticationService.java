@@ -1,4 +1,4 @@
-package com.example.service;
+package com.example.service.authentication;
 
 import com.example.repository.entity.Authority;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

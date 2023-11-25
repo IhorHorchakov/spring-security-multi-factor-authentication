@@ -1,7 +1,7 @@
 package com.example.config;
 
-import com.example.service.SmsCodeAuthenticationHandler;
-import com.example.service.UserService;
+import com.example.service.authentication.SmsCodeAuthenticationHandler;
+import com.example.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

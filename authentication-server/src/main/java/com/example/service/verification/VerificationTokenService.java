@@ -1,10 +1,11 @@
-package com.example.service;
+package com.example.service.verification;
 
 import com.example.client.VerificationTokenClient;
 import com.example.repository.VerificationTokenRepository;
 import com.example.repository.entity.SmsCodeVerificationToken;
 import com.example.repository.entity.User;
 import com.example.repository.entity.VerificationTokenStatus;
+import com.example.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,10 @@ import java.util.UUID;
 
 import static com.example.repository.entity.VerificationTokenStatus.VERIFICATION_FAILED;
 import static com.example.repository.entity.VerificationTokenStatus.VERIFICATION_PASSED;
-import static com.example.service.VerificationTokenService.TokenVerificationStatus.TOKEN_IS_MISSING;
-import static com.example.service.VerificationTokenService.TokenVerificationStatus.TOKEN_IS_NOT_VALID;
-import static com.example.service.VerificationTokenService.TokenVerificationStatus.TOKEN_IS_VALID;
-import static com.example.service.VerificationTokenService.TokenVerificationStatus.TOKEN_IS_NOT_CORRECT;
+import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_MISSING;
+import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_NOT_VALID;
+import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_VALID;
+import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_NOT_CORRECT;
 import static com.example.util.ApplicationConstants.APPLICATION_BRAND;
 import static com.example.util.ApplicationConstants.SMS_CODE_TOKEN_TIME_LIFE_SECONDS;
 
@@ -79,26 +80,6 @@ public class VerificationTokenService {
                     return TOKEN_IS_NOT_VALID;
                 }
             }
-        }
-    }
-
-    public enum TokenVerificationStatus {
-        TOKEN_IS_VALID,
-        TOKEN_IS_MISSING,
-        TOKEN_IS_NOT_CORRECT,
-        TOKEN_IS_NOT_VALID;
-
-        public boolean isValid() {
-            return this == TOKEN_IS_VALID;
-        }
-        public boolean isMissing() {
-            return this == TOKEN_IS_MISSING;
-        }
-        public boolean isNotCorrect() {
-            return this == TOKEN_IS_NOT_CORRECT;
-        }
-        public boolean isNotValid() {
-            return this == TOKEN_IS_NOT_VALID;
         }
     }
 }

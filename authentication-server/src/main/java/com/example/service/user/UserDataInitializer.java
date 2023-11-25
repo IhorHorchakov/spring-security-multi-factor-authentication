@@ -1,4 +1,4 @@
-package com.example.service;
+package com.example.service.user;
 
 import com.example.repository.entity.User;
 import lombok.extern.slf4j.Slf4j;
