@@ -14,23 +14,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.security.Principal;
+import java.util.Map;
 
-import static java.util.Collections.singletonMap;
 import static org.springframework.http.HttpStatus.OK;
 
 @Controller
 @Slf4j
-public class ResourceController {
+public class VerificationController {
     @Autowired
     private VerificationTokenService verificationTokenService;
     @Autowired
     private AuthenticationService authenticationService;
-
-    @GetMapping("/login")
-    public ModelAndView loginPage() {
-        log.info("Redirecting a user to the 'Login' page");
-        return new ModelAndView("login-page.html", OK);
-    }
 
     @GetMapping("/verify-sms-code")
     public ModelAndView verifySmsCodePage(Principal principal) {
@@ -49,8 +43,8 @@ public class ResourceController {
             return new ModelAndView("redirect:/home");
         } else if (status.isNotCorrect()){
             log.info("The given SMS code '{}' is NOT CORRECT for user '{}', try one more time", smsCode, username);
-            String message = "The code is not correct, try one more time";
-            return new ModelAndView("/verify-sms-code", singletonMap("message", message));
+            Map<String, String> params = Map.of("errorCause", "The code '%s' is not correct, try one more time".formatted(smsCode));
+            return new ModelAndView("/verify-sms-code-page.html", params);
         } else if (status.isMissing()) {
             log.info("No pending token found, user '{}' has to pass login procedure again", username);
         } else if (status.isNotValid()) {
@@ -58,12 +52,6 @@ public class ResourceController {
         }
         authenticationService.logOutPrincipal();
         return new ModelAndView("/login");
-    }
-
-    @GetMapping("/home")
-    public ModelAndView home(Principal principal) {
-        log.info("The user '{}' have been authorized", principal.getName());
-        return new ModelAndView("home-page.html", OK);
     }
 
 
