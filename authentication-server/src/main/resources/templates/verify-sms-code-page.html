@@ -1,11 +1,20 @@
-<html>
-<head></head>
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="default">
+<head>
+    <meta charset="UTF-8" />
+    <title>Two Factor Authorization Demo</title>
+</head>
 <body>
     <div class="container">
         <div class="col-lg-4 offset-lg-4 text-left">
             <form action="/verify-sms-code" method="post">
                 <h1>Verification page</h1>
-<!--                TODO display message variable-->
+                <div class="alert-danger text-center" th:if="${errorCause}">
+                    <label th:text="${errorCause}"></label>
+                </div>
                 <p>A text message has been sent to your mobile device. Please enter the code below:</p>
                 <div class="form-group">
                     <label for="smsCode">Verification Code</label>

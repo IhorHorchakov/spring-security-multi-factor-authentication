@@ -1,1 +1,16 @@
-home page
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="default">
+<head>
+    <meta charset="UTF-8" />
+    <title>Two Factor Authorization Demo</title>
+</head>
+<body>
+    <h1>Home page</h1>
+    <div layout:fragment="content" class="container">
+        Dear <label th:text="${username}"></label>, you have been successfully authenticated and authorized
+    </div>
+</body>
+</html>
