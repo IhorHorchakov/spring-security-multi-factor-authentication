@@ -51,4 +51,11 @@ public class InMemoryVerificationTokenRepository implements VerificationTokenRep
         }
     }
 
+    @Override
+    public void deleteDeprecatedTokens() {
+        this.storage.values().stream()
+                .filter(token -> token.getExpirationDate().isBefore(LocalDateTime.now()))
+                .forEach(deprecatedToken -> this.storage.remove(deprecatedToken.getTokenId()));
+    }
+
 }

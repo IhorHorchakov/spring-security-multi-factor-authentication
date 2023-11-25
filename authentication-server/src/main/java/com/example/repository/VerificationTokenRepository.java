@@ -14,4 +14,6 @@ public interface VerificationTokenRepository {
     void updateStatusByTokenId(String tokenId, VerificationTokenStatus status);
 
     void updateAttemptByTokenId(String tokenId, int numberOfAllowedVerificationAttempts);
+
+    void deleteDeprecatedTokens();
 }

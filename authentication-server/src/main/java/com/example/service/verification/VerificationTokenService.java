@@ -8,6 +8,7 @@ import com.example.repository.entity.VerificationTokenStatus;
 import com.example.service.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,9 +18,9 @@ import java.util.UUID;
 import static com.example.repository.entity.VerificationTokenStatus.VERIFICATION_FAILED;
 import static com.example.repository.entity.VerificationTokenStatus.VERIFICATION_PASSED;
 import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_MISSING;
+import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_NOT_CORRECT;
 import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_NOT_VALID;
 import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_VALID;
-import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_NOT_CORRECT;
 import static com.example.util.ApplicationConstants.APPLICATION_BRAND;
 import static com.example.util.ApplicationConstants.SMS_CODE_TOKEN_TIME_LIFE_SECONDS;
 
@@ -28,19 +29,19 @@ import static com.example.util.ApplicationConstants.SMS_CODE_TOKEN_TIME_LIFE_SEC
 public class VerificationTokenService {
     private static final Integer MAX_VERIFICATION_ATTEMPTS = 2;
     @Autowired
-    private VerificationTokenRepository verificationTokenRepository;
+    private VerificationTokenRepository tokenRepository;
     @Autowired
     private UserService userService;
     @Autowired
-    private VerificationTokenClient verificationTokenClient;
+    private VerificationTokenClient tokenClient;
 
     public void publishSmsCodeVerificationToken(String username) {
         User user = userService.getByUserName(username);
-        Optional<SmsCodeVerificationToken> optionalToken = verificationTokenRepository.getPendingActualLatestTokenByUserId(user.getId());
+        Optional<SmsCodeVerificationToken> optionalToken = tokenRepository.getPendingActualLatestTokenByUserId(user.getId());
         if (optionalToken.isEmpty()) {
-            verificationTokenClient.nexmoSendSmsCode(user.getPhoneNumber(), APPLICATION_BRAND);
+            tokenClient.nexmoSendSmsCode(user.getPhoneNumber(), APPLICATION_BRAND);
             SmsCodeVerificationToken token = createToken(user);
-            verificationTokenRepository.save(token);
+            tokenRepository.save(token);
         }
     }
 
@@ -57,29 +58,33 @@ public class VerificationTokenService {
         return token;
     }
 
-    //TODO handle the case when user have several attempts to enter the sms code
     public TokenVerificationStatus verifySmsCode(String username, String smsCode) {
         User user = userService.getByUserName(username);
-        Optional<SmsCodeVerificationToken> optionalToken = verificationTokenRepository.getPendingActualLatestTokenByUserId(user.getId());
+        Optional<SmsCodeVerificationToken> optionalToken = tokenRepository.getPendingActualLatestTokenByUserId(user.getId());
         if (optionalToken.isEmpty()) {
             return TOKEN_IS_MISSING;
         } else {
             SmsCodeVerificationToken token = optionalToken.get();
             String tokenId = token.getTokenId();
-            boolean isSmsCodeValid = verificationTokenClient.nexmoCheckCode(tokenId, smsCode);
+            boolean isSmsCodeValid = tokenClient.nexmoCheckCode(tokenId, smsCode);
             if (isSmsCodeValid) {
-                verificationTokenRepository.updateStatusByTokenId(tokenId, VERIFICATION_PASSED);
+                tokenRepository.updateStatusByTokenId(tokenId, VERIFICATION_PASSED);
                 return TOKEN_IS_VALID;
             } else {
                 int numberOfAllowedVerificationAttempts = token.getAttempt() - 1;
                 if (numberOfAllowedVerificationAttempts >= 0) {
-                    verificationTokenRepository.updateAttemptByTokenId(tokenId, numberOfAllowedVerificationAttempts);
+                    tokenRepository.updateAttemptByTokenId(tokenId, numberOfAllowedVerificationAttempts);
                     return TOKEN_IS_NOT_CORRECT;
                 } else {
-                    verificationTokenRepository.updateStatusByTokenId(tokenId, VERIFICATION_FAILED);
+                    tokenRepository.updateStatusByTokenId(tokenId, VERIFICATION_FAILED);
                     return TOKEN_IS_NOT_VALID;
                 }
             }
         }
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void deleteDeprecatedTokens() {
+        tokenRepository.deleteDeprecatedTokens();
     }
 }
