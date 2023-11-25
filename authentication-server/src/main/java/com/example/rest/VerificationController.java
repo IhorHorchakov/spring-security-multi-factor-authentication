@@ -38,21 +38,40 @@ public class VerificationController {
         log.info("Verifying user {} identity by the input SMS code {}", username, smsCode);
         TokenVerificationStatus status = verificationTokenService.verifySmsCode(username, smsCode);
         if (status.isValid()) {
-            log.info("The given SMS code '{}' is VALID for user '{}'", smsCode, username);
-            authenticationService.grandPrincipalByAuthority(Authority.MFA_AUTHENTICATED);
-            return new ModelAndView("redirect:/home");
+            return handleValidStatus(smsCode, username);
         } else if (status.isNotCorrect()){
-            log.info("The given SMS code '{}' is NOT CORRECT for user '{}', try one more time", smsCode, username);
-            Map<String, String> params = Map.of("errorCause", "The code '%s' is not correct, try one more time".formatted(smsCode));
-            return new ModelAndView("/verify-sms-code-page.html", params);
+            return handleNotCorrectStatus(smsCode, username);
         } else if (status.isMissing()) {
-            log.info("No pending token found, user '{}' has to pass login procedure again", username);
+            return handleMissingStatus(username);
         } else if (status.isNotValid()) {
-            log.info("The given SMS code '{}' is NOT VALID for user '{}'", smsCode, username);
+            return handleNotValidStatus(smsCode, username);
+        } else {
+            authenticationService.logOutPrincipal();
+            throw new IllegalStateException("Failed to handle the given token");
         }
+    }
+
+    private ModelAndView handleValidStatus(String smsCode, String username) {
+        log.info("The given SMS code '{}' is VALID for user '{}'", smsCode, username);
+        authenticationService.grandPrincipalByAuthority(Authority.MFA_AUTHENTICATED);
+        return new ModelAndView("redirect:/home");
+    }
+
+    private ModelAndView handleNotCorrectStatus(String smsCode, String username) {
+        log.info("The given SMS code '{}' is NOT CORRECT for user '{}', try one more time", smsCode, username);
+        Map<String, String> params = Map.of("errorCause", "The code '%s' is not correct, try one more time".formatted(smsCode));
+        return new ModelAndView("/verify-sms-code-page.html", params);
+    }
+
+    private ModelAndView handleMissingStatus(String username) {
+        log.info("No pending token found, user '{}' has to pass login procedure again", username);
         authenticationService.logOutPrincipal();
         return new ModelAndView("/login");
     }
 
-
+    private ModelAndView handleNotValidStatus(String smsCode, String username) {
+        log.info("The given SMS code '{}' is NOT VALID for user '{}'", smsCode, username);
+        authenticationService.logOutPrincipal();
+        return new ModelAndView("/login");
+    }
 }
