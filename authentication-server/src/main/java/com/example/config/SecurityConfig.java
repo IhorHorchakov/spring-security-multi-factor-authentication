@@ -1,5 +1,6 @@
 package com.example.config;
 
+import com.example.service.authentication.FormLoginFailedHandler;
 import com.example.service.authentication.SmsCodeAuthenticationHandler;
 import com.example.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class SecurityConfig {
     private UserService userService;
     @Autowired
     private SmsCodeAuthenticationHandler smsCodeAuthenticationHandler;
+    @Autowired
+    private FormLoginFailedHandler formLoginFailedHandler;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -46,7 +49,8 @@ public class SecurityConfig {
                 .and()
                 .formLogin()
                     .loginPage("/login").permitAll()
-                    .successHandler(smsCodeAuthenticationHandler);
+                    .successHandler(smsCodeAuthenticationHandler)
+                    .failureHandler(formLoginFailedHandler);
         return http.build();
     }
 }
