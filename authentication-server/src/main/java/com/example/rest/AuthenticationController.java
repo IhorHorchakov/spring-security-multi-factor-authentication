@@ -27,6 +27,7 @@ public class AuthenticationController {
     public ModelAndView homePage() {
         String username = authenticationService.getPrincipalUsername();
         log.info("The user '{}' has been authorized", username);
-        return new ModelAndView("home-page.html", Map.of("username", username), OK);
+        Map<String, String> mavParams = Map.of("username", username);
+        return new ModelAndView("home-page.html", mavParams, OK);
     }
 }

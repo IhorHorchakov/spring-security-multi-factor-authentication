@@ -13,7 +13,7 @@ public class VerificationTokenClient {
     public VerifyResponse nexmoSendSmsCode(String phoneNumber, String applicationBrand) {
         String jsonResponse = "{\n" +
                 "  \"request_id\": \"1234\",\n" +
-                "  \"status\": \"OK\"\n" +
+                "  \"status\": \"0\"\n" +
                 "}";
         return VerifyResponse.fromJson(jsonResponse);
     }

@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.ACCEPTED;
 import static org.springframework.http.HttpStatus.OK;
 
 @Controller
@@ -60,13 +61,13 @@ public class VerificationController {
     private ModelAndView handleValidStatus(String smsCode, String username) {
         log.info("The given SMS code '{}' is VALID for user '{}'", smsCode, username);
         authenticationService.grandPrincipalByAuthority(Authority.MFA_AUTHENTICATED);
-        return new ModelAndView("redirect:/home");
+        return new ModelAndView("redirect:/home", OK);
     }
 
     private ModelAndView handleNotCorrectStatus(String smsCode, String username) {
         log.info("The given SMS code '{}' is NOT CORRECT for user '{}', try one more time", smsCode, username);
-        Map<String, String> params = Map.of("errorCause", "The code '%s' is not correct, try one more time".formatted(smsCode));
-        return new ModelAndView("/verify-sms-code-page.html", params);
+        Map<String, String> mavParams = Map.of("errorCause", "The code '%s' is not correct, try one more time".formatted(smsCode));
+        return new ModelAndView("/verify-sms-code-page.html", mavParams, ACCEPTED);
     }
 
     private ModelAndView handleMissingStatus(String username) {
