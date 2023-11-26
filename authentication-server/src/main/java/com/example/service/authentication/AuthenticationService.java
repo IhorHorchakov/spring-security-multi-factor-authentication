@@ -10,8 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class AuthenticationService {
@@ -28,8 +28,7 @@ public class AuthenticationService {
 
     public void grandPrincipalByAuthority(Authority authority) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        //TODO check if the given authority is not added already
-        List<GrantedAuthority> updatedAuthorities = new ArrayList<>(auth.getAuthorities());
+        Set<GrantedAuthority> updatedAuthorities = new HashSet<>(auth.getAuthorities());
         updatedAuthorities.add(authority);
         Authentication newAuth = new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), updatedAuthorities);
         SecurityContextHolder.getContext().setAuthentication(newAuth);

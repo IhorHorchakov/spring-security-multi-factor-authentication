@@ -23,12 +23,12 @@ import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_
 import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_NOT_VALID;
 import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_VALID;
 import static com.example.util.ApplicationConstants.APPLICATION_BRAND;
+import static com.example.util.ApplicationConstants.SMS_CODE_TOKEN_MAX_VERIFICATION_ATTEMPTS_ALLOWED;
 import static com.example.util.ApplicationConstants.SMS_CODE_TOKEN_TIME_LIFE_SECONDS;
 
 @Service
 @Slf4j
 public class VerificationTokenService {
-    private static final Integer MAX_VERIFICATION_ATTEMPTS = 2;
     @Autowired
     private VerificationTokenRepository tokenRepository;
     @Autowired
@@ -40,11 +40,11 @@ public class VerificationTokenService {
         User user = userService.getByUserName(username);
         Optional<SmsCodeVerificationToken> optionalToken = tokenRepository.getPendingActualLatestTokenByUserId(user.getId());
         if (optionalToken.isEmpty()) {
-            generateAndSendVerificationToken(user);
+            generateVerificationToken(user);
         }
     }
 
-    public void generateAndSendVerificationToken(User user) {
+    public void generateVerificationToken(User user) {
         VerifyResponse verifyResponse = tokenClient.nexmoSendSmsCode(user.getPhoneNumber(), APPLICATION_BRAND);
         if (VerifyStatus.OK == verifyResponse.getStatus()) {
             SmsCodeVerificationToken token = createSmsCodeVerificationToken(verifyResponse.getRequestId(), user);
@@ -61,7 +61,7 @@ public class VerificationTokenService {
         token.setUserId(user.getId());
         token.setPhoneNumber(user.getPhoneNumber());
         token.setStatus(VerificationTokenStatus.PENDING);
-        token.setAttempt(MAX_VERIFICATION_ATTEMPTS);
+        token.setAttempt(SMS_CODE_TOKEN_MAX_VERIFICATION_ATTEMPTS_ALLOWED);
         LocalDateTime createdDate = LocalDateTime.now();
         token.setCreatedDate(createdDate);
         token.setExpirationDate(createdDate.plusSeconds(SMS_CODE_TOKEN_TIME_LIFE_SECONDS));

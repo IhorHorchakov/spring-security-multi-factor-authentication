@@ -54,7 +54,7 @@ public class VerificationController {
     @PostMapping("/generate-sms-code")
     public ModelAndView generateSmsCode() {
         User principal = authenticationService.getPrincipalUser();
-        verificationTokenService.generateAndSendVerificationToken(principal);
+        verificationTokenService.generateVerificationToken(principal);
         return new ModelAndView("verify-sms-code-page.html", OK);
     }
 
