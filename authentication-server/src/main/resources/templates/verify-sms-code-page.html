@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="container">
-        <div class="col-lg-4 offset-lg-4 text-left">
+        <div id="verification-container">
             <form action="/verify-sms-code" method="post">
                 <h1>Verification page</h1>
                 <div class="text-center" th:if="${errorCause}">
@@ -21,6 +21,11 @@
                     <input id="smsCode" name="smsCode" type="text" placeholder="4-Digit Code" />
                 </div>
                 <button type="submit">Verify</button>
+            </form>
+        </div>
+        <div id="generate-token-container">
+            <form action="/generate-sms-code" method="post">
+                <button type="submit">Generate new sms code</button>
             </form>
         </div>
     </div>

@@ -6,6 +6,8 @@ import com.example.repository.entity.SmsCodeVerificationToken;
 import com.example.repository.entity.User;
 import com.example.repository.entity.VerificationTokenStatus;
 import com.example.service.user.UserService;
+import com.nexmo.client.verify.VerifyResponse;
+import com.nexmo.client.verify.VerifyStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.example.repository.entity.VerificationTokenStatus.VERIFICATION_FAILED;
 import static com.example.repository.entity.VerificationTokenStatus.VERIFICATION_PASSED;
@@ -39,15 +40,24 @@ public class VerificationTokenService {
         User user = userService.getByUserName(username);
         Optional<SmsCodeVerificationToken> optionalToken = tokenRepository.getPendingActualLatestTokenByUserId(user.getId());
         if (optionalToken.isEmpty()) {
-            tokenClient.nexmoSendSmsCode(user.getPhoneNumber(), APPLICATION_BRAND);
-            SmsCodeVerificationToken token = createToken(user);
-            tokenRepository.save(token);
+            generateAndSendVerificationToken(user);
         }
     }
 
-    private SmsCodeVerificationToken createToken(User user) {
+    public void generateAndSendVerificationToken(User user) {
+        VerifyResponse verifyResponse = tokenClient.nexmoSendSmsCode(user.getPhoneNumber(), APPLICATION_BRAND);
+        if (VerifyStatus.OK == verifyResponse.getStatus()) {
+            SmsCodeVerificationToken token = createSmsCodeVerificationToken(verifyResponse.getRequestId(), user);
+            tokenRepository.save(token);
+        } else {
+            log.error("Failed to generate new sms code, status: {}, cause: {}", verifyResponse.getStatus(), verifyResponse.getErrorText());
+            throw new RuntimeException("Failed to generate new sms code");
+        }
+    }
+
+    public SmsCodeVerificationToken createSmsCodeVerificationToken(String requestId, User user) {
         SmsCodeVerificationToken token = new SmsCodeVerificationToken();
-        token.setTokenId(UUID.randomUUID().toString());
+        token.setTokenId(requestId);
         token.setUserId(user.getId());
         token.setPhoneNumber(user.getPhoneNumber());
         token.setStatus(VerificationTokenStatus.PENDING);

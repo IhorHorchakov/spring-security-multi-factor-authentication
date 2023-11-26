@@ -15,11 +15,6 @@ public class VerificationTokenClient {
                 "  \"request_id\": \"1234\",\n" +
                 "  \"status\": \"OK\"\n" +
                 "}";
-
-        // if (verifyResponse.getErrorText() != null) {
-        //            String errorMessage = "An error occurred while verifying user's phone number, cause: %s, status: %s".formatted(verifyResponse.getErrorText(), verifyResponse.getStatus());
-        //            throw new RuntimeException(errorMessage);
-        //        }
         return VerifyResponse.fromJson(jsonResponse);
     }
 

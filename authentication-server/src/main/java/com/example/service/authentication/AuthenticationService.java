@@ -1,6 +1,9 @@
 package com.example.service.authentication;
 
 import com.example.repository.entity.Authority;
+import com.example.repository.entity.User;
+import com.example.service.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,7 +15,16 @@ import java.util.List;
 
 @Component
 public class AuthenticationService {
-    //TODO login programmatically
+    @Autowired
+    private UserService userService;
+
+    public User getPrincipalUser() {
+        return userService.getByUserName(getPrincipalUsername());
+    }
+
+    public String getPrincipalUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
 
     public void grandPrincipalByAuthority(Authority authority) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
