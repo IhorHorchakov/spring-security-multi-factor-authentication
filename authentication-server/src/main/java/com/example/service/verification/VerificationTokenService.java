@@ -19,10 +19,10 @@ import java.util.Optional;
 
 import static com.example.repository.entity.VerificationTokenStatus.VERIFICATION_FAILED;
 import static com.example.repository.entity.VerificationTokenStatus.VERIFICATION_PASSED;
-import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_MISSING;
-import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_NOT_CORRECT;
-import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_NOT_VALID;
-import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_VALID;
+import static com.example.service.verification.VerificationStatus.TOKEN_IS_MISSING;
+import static com.example.service.verification.VerificationStatus.TOKEN_IS_NOT_CORRECT;
+import static com.example.service.verification.VerificationStatus.TOKEN_IS_NOT_VALID;
+import static com.example.service.verification.VerificationStatus.TOKEN_IS_VALID;
 import static com.example.ApplicationConstants.SMS_CODE_TOKEN_MAX_VERIFICATION_ATTEMPTS_ALLOWED;
 import static com.example.ApplicationConstants.SMS_CODE_TOKEN_TIME_LIFE_SECONDS;
 
@@ -68,7 +68,7 @@ public class VerificationTokenService {
         return token;
     }
 
-    public TokenVerificationStatus verifySmsCode(String username, String smsCode) {
+    public VerificationStatus verifySmsCode(String username, String smsCode) {
         User user = userService.getByUserName(username);
         Optional<SmsCodeVerificationToken> optionalToken = tokenRepository.getPendingActualLatestTokenByUserId(user.getId());
         if (optionalToken.isEmpty()) {

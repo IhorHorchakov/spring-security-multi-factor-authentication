@@ -3,7 +3,7 @@ package com.example.rest;
 import com.example.repository.entity.Authority;
 import com.example.repository.entity.User;
 import com.example.service.authentication.AuthenticationService;
-import com.example.service.verification.TokenVerificationStatus;
+import com.example.service.verification.VerificationStatus;
 import com.example.service.verification.VerificationTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class VerificationController {
     public Object processSmsCodeVerification(@RequestParam("smsCode") String smsCode, RedirectAttributes redirectAttributes) {
         String username = authenticationService.getPrincipalUsername();
         log.info("Verifying user {} identity by the input SMS code {}", username, smsCode);
-        TokenVerificationStatus status = verificationTokenService.verifySmsCode(username, smsCode);
+        VerificationStatus status = verificationTokenService.verifySmsCode(username, smsCode);
         if (status.isValid()) {
             return handleValidStatus(smsCode, username, redirectAttributes);
         } else if (status.isNotCorrect()){

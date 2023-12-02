@@ -1,6 +1,6 @@
 package com.example.service.verification;
 
-public enum TokenVerificationStatus {
+public enum VerificationStatus {
     TOKEN_IS_VALID,
     TOKEN_IS_MISSING,
     TOKEN_IS_NOT_CORRECT,
