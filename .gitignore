@@ -1,8 +1,4 @@
 target/
-authentication-server/**/target/
-authentication-server/**/application.properties
-authentication-server/src/main/resources/application.properties
-src/main/resources/application.properties
 
 ### IntelliJ IDEA ###
 .idea
