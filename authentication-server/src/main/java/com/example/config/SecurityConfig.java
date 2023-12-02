@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .and()
                 .formLogin()
                     .loginPage("/login").permitAll()
+                    .loginProcessingUrl("/process-login").permitAll()
                     .successHandler(smsCodeAuthenticationHandler)
                     .failureHandler(formLoginFailedHandler);
         return http.build();
