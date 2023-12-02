@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.example.repository.entity.VerificationTokenStatus.PENDING;
+import static com.example.repository.entity.VerificationTokenStatus.VERIFICATION_PENDING;
 
 @Repository
 public class InMemoryVerificationTokenRepository implements VerificationTokenRepository {
@@ -28,7 +28,7 @@ public class InMemoryVerificationTokenRepository implements VerificationTokenRep
     public Optional<SmsCodeVerificationToken> getPendingActualLatestTokenByUserId(int userId) {
         return this.storage.values().stream()
                 // check the token is 'pending'
-                .filter(token -> token.getUserId() == userId && token.getStatus() == PENDING)
+                .filter(token -> token.getUserId() == userId && token.getStatus() == VERIFICATION_PENDING)
                 // check the token is not expired - 'actual'
                 .filter(token -> token.getExpirationDate().isAfter(LocalDateTime.now()))
                 // get the 'latest' token sorted by created date

@@ -60,7 +60,7 @@ public class VerificationTokenService {
         token.setTokenId(requestId);
         token.setUserId(user.getId());
         token.setPhoneNumber(user.getPhoneNumber());
-        token.setStatus(VerificationTokenStatus.PENDING);
+        token.setStatus(VerificationTokenStatus.VERIFICATION_PENDING);
         token.setAttempt(SMS_CODE_TOKEN_MAX_VERIFICATION_ATTEMPTS_ALLOWED);
         LocalDateTime createdDate = LocalDateTime.now();
         token.setCreatedDate(createdDate);
