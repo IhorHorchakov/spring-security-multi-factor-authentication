@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Map;
 
@@ -33,12 +35,12 @@ public class VerificationController {
     }
 
     @PostMapping("/verify-sms-code")
-    public ModelAndView processSmsCodeVerification(@RequestParam("smsCode") String smsCode) {
+    public Object processSmsCodeVerification(@RequestParam("smsCode") String smsCode, RedirectAttributes redirectAttributes) {
         String username = authenticationService.getPrincipalUsername();
         log.info("Verifying user {} identity by the input SMS code {}", username, smsCode);
         TokenVerificationStatus status = verificationTokenService.verifySmsCode(username, smsCode);
         if (status.isValid()) {
-            return handleValidStatus(smsCode, username);
+            return handleValidStatus(smsCode, username, redirectAttributes);
         } else if (status.isNotCorrect()){
             return handleNotCorrectStatus(smsCode, username);
         } else if (status.isMissing()) {
@@ -58,16 +60,17 @@ public class VerificationController {
         return new ModelAndView("verify-sms-code-page.html", OK);
     }
 
-    private ModelAndView handleValidStatus(String smsCode, String username) {
+    private RedirectView handleValidStatus(String smsCode, String username, RedirectAttributes redirectAttributes) {
         log.info("The given SMS code '{}' is VALID for user '{}'", smsCode, username);
         authenticationService.grandPrincipalByAuthority(Authority.MFA_AUTHENTICATED);
-        return new ModelAndView("redirect:/home", OK);
+        redirectAttributes.addFlashAttribute("flashAttribute", "redirectWithRedirectAttributes");
+        return new RedirectView("/home");
     }
 
     private ModelAndView handleNotCorrectStatus(String smsCode, String username) {
         log.info("The given SMS code '{}' is NOT CORRECT for user '{}', try one more time", smsCode, username);
         Map<String, String> mavParams = Map.of("errorCause", "The code '%s' is not correct, try one more time".formatted(smsCode));
-        return new ModelAndView("/verify-sms-code-page.html", mavParams, ACCEPTED);
+        return new ModelAndView("verify-sms-code-page.html", mavParams, ACCEPTED);
     }
 
     private ModelAndView handleMissingStatus(String username) {

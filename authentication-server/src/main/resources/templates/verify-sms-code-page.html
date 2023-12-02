@@ -13,7 +13,7 @@
             <form action="/verify-sms-code" method="post">
                 <h1>Verification page</h1>
                 <div class="text-center" th:if="${errorCause}">
-                    <label th:text="${errorCause}"></label>
+                    <strong th:text="${errorCause}"/>
                 </div>
                 <p>A text message has been sent to your mobile device. Please enter the code below:</p>
                 <div class="form-group">
