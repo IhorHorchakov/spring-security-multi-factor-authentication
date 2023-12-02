@@ -6,8 +6,9 @@ import com.example.repository.entity.SmsCodeVerificationToken;
 import com.example.repository.entity.User;
 import com.example.repository.entity.VerificationTokenStatus;
 import com.example.service.user.UserService;
-import com.nexmo.client.verify.VerifyResponse;
-import com.nexmo.client.verify.VerifyStatus;
+import com.vonage.client.verify.CheckResponse;
+import com.vonage.client.verify.VerifyResponse;
+import com.vonage.client.verify.VerifyStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,9 +23,8 @@ import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_
 import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_NOT_CORRECT;
 import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_NOT_VALID;
 import static com.example.service.verification.TokenVerificationStatus.TOKEN_IS_VALID;
-import static com.example.util.ApplicationConstants.APPLICATION_BRAND;
-import static com.example.util.ApplicationConstants.SMS_CODE_TOKEN_MAX_VERIFICATION_ATTEMPTS_ALLOWED;
-import static com.example.util.ApplicationConstants.SMS_CODE_TOKEN_TIME_LIFE_SECONDS;
+import static com.example.ApplicationConstants.SMS_CODE_TOKEN_MAX_VERIFICATION_ATTEMPTS_ALLOWED;
+import static com.example.ApplicationConstants.SMS_CODE_TOKEN_TIME_LIFE_SECONDS;
 
 @Service
 @Slf4j
@@ -45,7 +45,7 @@ public class VerificationTokenService {
     }
 
     public void generateVerificationToken(User user) {
-        VerifyResponse verifyResponse = tokenClient.nexmoSendSmsCode(user.getPhoneNumber(), APPLICATION_BRAND);
+        VerifyResponse verifyResponse = tokenClient.nexmoSendSmsCode(user.getPhoneNumber());
         if (VerifyStatus.OK == verifyResponse.getStatus()) {
             SmsCodeVerificationToken token = createSmsCodeVerificationToken(verifyResponse.getRequestId(), user);
             tokenRepository.save(token);
@@ -76,8 +76,8 @@ public class VerificationTokenService {
         } else {
             SmsCodeVerificationToken token = optionalToken.get();
             String tokenId = token.getTokenId();
-            boolean isSmsCodeValid = tokenClient.nexmoCheckCode(tokenId, smsCode);
-            if (isSmsCodeValid) {
+            CheckResponse checkResponse = tokenClient.nexmoCheckCode(tokenId, smsCode);
+            if (VerifyStatus.OK == checkResponse.getStatus()) {
                 tokenRepository.updateStatusByTokenId(tokenId, VERIFICATION_PASSED);
                 return TOKEN_IS_VALID;
             } else {

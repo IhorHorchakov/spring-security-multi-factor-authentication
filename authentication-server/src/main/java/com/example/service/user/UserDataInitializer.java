@@ -25,14 +25,14 @@ public class UserDataInitializer {
                 .id(0)
                 .username("johndoe")
                 .password(passwordEncoder.encode("johndoepass"))
-                .phoneNumber("+380951234567")
+                .phoneNumber("380954354329")
                 .authorities(Arrays.asList())
                 .build();
         User fairyprincess = User.builder()
                 .id(1)
                 .username("fairyprincess")
                 .password(passwordEncoder.encode("fairyprincesspass"))
-                .phoneNumber("+380951234560")
+                .phoneNumber("380951234560")
                 .authorities(Arrays.asList())
                 .build();
         userService.save(johndoe);

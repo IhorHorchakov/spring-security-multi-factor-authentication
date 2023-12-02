@@ -73,12 +73,12 @@ public class VerificationController {
     private ModelAndView handleMissingStatus(String username) {
         log.info("No pending token found, user '{}' has to pass login procedure again", username);
         authenticationService.logOutPrincipal();
-        return new ModelAndView("/login");
+        return new ModelAndView("login.html");
     }
 
     private ModelAndView handleNotValidStatus(String smsCode, String username) {
         log.info("The given SMS code '{}' is NOT VALID for user '{}'", smsCode, username);
         authenticationService.logOutPrincipal();
-        return new ModelAndView("/login");
+        return new ModelAndView("login.html");
     }
 }

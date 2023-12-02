@@ -1,24 +1,28 @@
 package com.example.client;
 
-import com.nexmo.client.verify.VerifyResponse;
+import com.vonage.client.VonageClient;
+import com.vonage.client.verify.CheckResponse;
+import com.vonage.client.verify.VerifyResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import static com.example.ApplicationConstants.APPLICATION_BRAND;
 
 @Component
 public class VerificationTokenClient {
-//    @Autowired
-//    private VerifyClient nexmoVerifyClient;
-//    @Autowired
-//    private NexmoClient nexmoClient;
+    @Autowired
+    private VonageClient vonageClient;
 
-    public VerifyResponse nexmoSendSmsCode(String phoneNumber, String applicationBrand) {
-        String jsonResponse = "{\n" +
-                "  \"request_id\": \"1234\",\n" +
-                "  \"status\": \"0\"\n" +
-                "}";
-        return VerifyResponse.fromJson(jsonResponse);
+    public VerifyResponse nexmoSendSmsCode(String phoneNumber) {
+//        String jsonResponse = "{\n" +
+//                "  \"request_id\": \"1234\",\n" +
+//                "  \"status\": \"0\"\n" +
+//                "}";
+//        return VerifyResponse.fromJson(jsonResponse);
+        return vonageClient.getVerifyClient().verify(phoneNumber, APPLICATION_BRAND);
     }
 
-    public boolean nexmoCheckCode(String tokenId, String smsCode) {
-        return Integer.parseInt(smsCode) == 1234;
+    public CheckResponse nexmoCheckCode(String requestId, String smsCode) {
+        return vonageClient.getVerifyClient().check(requestId, smsCode);
     }
 }
