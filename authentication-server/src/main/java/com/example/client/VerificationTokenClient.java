@@ -14,11 +14,6 @@ public class VerificationTokenClient {
     private VonageClient vonageClient;
 
     public VerifyResponse nexmoSendSmsCode(String phoneNumber) {
-//        String jsonResponse = "{\n" +
-//                "  \"request_id\": \"1234\",\n" +
-//                "  \"status\": \"0\"\n" +
-//                "}";
-//        return VerifyResponse.fromJson(jsonResponse);
         return vonageClient.getVerifyClient().verify(phoneNumber, APPLICATION_BRAND);
     }
 

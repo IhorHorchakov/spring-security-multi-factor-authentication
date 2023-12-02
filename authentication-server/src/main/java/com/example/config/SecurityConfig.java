@@ -9,14 +9,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import static com.example.repository.entity.Authority.MFA_AUTHENTICATED;
-import static com.example.repository.entity.Authority.READY_FOR_SMS_CODE_VERIFICATION;
-
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
     @Autowired
     private UserService userService;
@@ -43,8 +42,6 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeHttpRequests()
-                    .requestMatchers("/verify-sms-code").hasAuthority(READY_FOR_SMS_CODE_VERIFICATION.getAuthority())
-                    .requestMatchers("/home").hasAuthority(MFA_AUTHENTICATED.getAuthority())
                     .anyRequest().authenticated()
                 .and()
                 .formLogin()
